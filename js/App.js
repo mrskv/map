@@ -7,7 +7,6 @@ var App = (function() {
             Obj.initMap();
             Obj.createModels();
             Obj.createCollection();
-            Obj.loadMarkers();
             Obj.setMapListeners();
             Obj.renderInput();
             Obj.markers = {};
@@ -27,19 +26,23 @@ var App = (function() {
          */
         createCollection: function() {
             var Collection = Backbone.Collection.extend({
-                model: Obj.Model.Marker
+                model: Obj.Model.Marker,
+                url: 'service.php?action=list'
             });
             Obj.markerCollection = new Collection();
             Obj.markerCollection.bind("add", function(child) {
                 Obj.createView(child);
             }, this);
+            Obj.markerCollection.fetch();
         },
         /**
          * Создание вьюшки модели и установка слушателей на кнопку удаления
          * @param model Моделька маркера
          */
         createView: function(model) {
-            var MyItemsView = Marionette.ItemView.extend({
+            var MyItemsView, view, marker;
+
+            MyItemsView = Marionette.ItemView.extend({
                 template: "#markersTemplate",
                 events: {
                     'click .deleteMarker': 'deleteMarker',
@@ -59,27 +62,29 @@ var App = (function() {
                 }
             });
 
-            var view = new MyItemsView({
+            view = new MyItemsView({
                 model: model
             });
 
             document.getElementById('markersList').appendChild(view.render().el);
             model.on('destroy', function() {
                 view.destroy();
-                console.log(Obj.markerCollection);
             }, this);
+
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(model.get('lat'), model.get('lng')),
+                map: Obj.map,
+                draggable: true,
+                id: model.get('id')
+            });
+            Obj.markers[model.get('id')] = marker;
+            model.setMarkerListeners();
         },
         /**
          * Создание модели загрузки списка маркеров и модели самого маркера
          */
         createModels: function() {
             Obj.Model = {};
-
-            Obj.Model.LoadMarker = Backbone.Model.extend({
-                defaults: {
-                },
-                url:"service.php?action=list"
-            });
 
             Obj.Model.InputModel = Backbone.Model.extend({
                 defaults: {
@@ -91,7 +96,7 @@ var App = (function() {
             });
 
             Obj.Model.Marker = Backbone.Model.extend({
-                setListeners: function() {
+                setMarkerListeners: function() {
                     var markerObj = Obj.markers[this.get('id')],
                         currentModel = this;
                     google.maps.event.addListener(markerObj,'dragend',function(event) {
@@ -141,67 +146,25 @@ var App = (function() {
             });
         },
         /**
-         * Загрузка списка маркеров
-         */
-        loadMarkers: function() {
-            var model = new Obj.Model.LoadMarker();
-            model.fetch({
-                success: function(model, response) {
-                    _.each(response, function(i) {
-                        var location = new google.maps.LatLng(i.lat, i.lng);
-                        Obj.createMarker(location, i.id, false);
-                    });
-                }
-            });
-
-        },
-        /**
          * Устанавливаем слушателей самой карты
          */
         setMapListeners: function() {
             google.maps.event.addListener(Obj.map, 'click', function(event) {
-                Obj.createMarker(event.latLng);
-            });
-        },
-        /**
-         *
-         * @param location объект гугловского положения
-         * @param id ID маркера
-         * @param {Bool|undefined} save Нужно ли отправлять запрос на сервер для сохранения маркера
-         */
-        createMarker: function(location, id, save) {
-            if(id === undefined) {
-                id = + new Date;
-            }
-            var marker = new google.maps.Marker({
-                position: location,
-                map: Obj.map,
-                draggable: true,
-                id: id
-            });
-            Obj.markers[id] = marker;
-            Obj.createMarkerModel({
-                lat: location.lat(),
-                lng: location.lng(),
-                id: id,
-                save: save
+                Obj.createMarkerModel(event.latLng);
             });
         },
         /**
          * Создание модельки маркера по входящим данным
-         * @param data
+         * @param {Object} location Объект гугловский координат
          */
-        createMarkerModel: function(data) {
+        createMarkerModel: function(location) {
             var markerModel = new Obj.Model.Marker({
-                lat: data.lat,
-                lng: data.lng,
-                id: data.id
+                lat: location.lat(),
+                lng: location.lng(),
+                id: + new Date
             });
-            markerModel.setListeners();
-            if(data.save !== false) {
-                markerModel.saveMarker();
-            }
             Obj.markerCollection.add(markerModel);
+            markerModel.saveMarker();
         },
         /**
          * рендер блока адреса
@@ -238,7 +201,7 @@ var App = (function() {
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode({ 'address': address}, function(results, status) {
                 if(status === 'OK') {
-                    Obj.createMarker(results[0].geometry.location);
+                    Obj.createMarkerModel(results[0].geometry.location);
                 }
             });
         }
