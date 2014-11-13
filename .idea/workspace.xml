@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="App.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="App.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/App.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.058504876" vertical-offset="0" max-vertical-offset="4590">
-              <caret line="3" column="27" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
+            <state vertical-scroll-proportion="-18.633333" vertical-offset="1889" max-vertical-offset="4698">
+              <caret line="136" column="66" selection-start-line="136" selection-start-column="66" selection-end-line="136" selection-end-column="66" />
               <folding />
             </state>
           </provider>
@@ -65,16 +65,16 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="service.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="service.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/service.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.333334" vertical-offset="0" max-vertical-offset="900">
-              <caret line="26" column="34" selection-start-line="26" selection-start-column="34" selection-end-line="26" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.6889849" vertical-offset="136" max-vertical-offset="1062">
+              <caret line="43" column="36" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
               <folding>
-                <marker date="1415852654152" expanded="true" signature="307:381" placeholder="INSERT INTO ..." />
-                <marker date="1415852654152" expanded="true" signature="382:411" placeholder="UPDATE lat =..." />
-                <marker date="1415852654152" expanded="true" signature="941:962" placeholder="SELECT * FRO..markers..." />
-                <marker date="1415852654152" expanded="true" signature="1213:1247" placeholder="DELETE FROM ..." />
+                <marker date="1415853639308" expanded="true" signature="307:381" placeholder="INSERT INTO ..." />
+                <marker date="1415853639308" expanded="true" signature="382:411" placeholder="UPDATE lat =..." />
+                <marker date="1415853639308" expanded="true" signature="941:962" placeholder="SELECT * FRO..markers..." />
+                <marker date="1415853639308" expanded="true" signature="1213:1247" placeholder="DELETE FROM ..." />
               </folding>
             </state>
           </provider>
@@ -92,9 +92,9 @@
       <list>
         <option value="$PROJECT_DIR$/css/style.css" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/service.php" />
         <option value="$PROJECT_DIR$/main.js" />
         <option value="$PROJECT_DIR$/js/App.js" />
+        <option value="$PROJECT_DIR$/service.php" />
       </list>
     </option>
   </component>
@@ -260,19 +260,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/service.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.333334" vertical-offset="0" max-vertical-offset="900">
-          <caret line="26" column="34" selection-start-line="26" selection-start-column="34" selection-end-line="26" selection-end-column="34" />
-          <folding>
-            <marker date="1415852654152" expanded="true" signature="307:381" placeholder="INSERT INTO ..." />
-            <marker date="1415852654152" expanded="true" signature="382:411" placeholder="UPDATE lat =..." />
-            <marker date="1415852654152" expanded="true" signature="941:962" placeholder="SELECT * FRO..markers..." />
-            <marker date="1415852654152" expanded="true" signature="1213:1247" placeholder="DELETE FROM ..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
@@ -283,9 +270,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/App.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.058504876" vertical-offset="0" max-vertical-offset="4590">
-          <caret line="3" column="27" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
+        <state vertical-scroll-proportion="-18.633333" vertical-offset="1889" max-vertical-offset="4698">
+          <caret line="136" column="66" selection-start-line="136" selection-start-column="66" selection-end-line="136" selection-end-column="66" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/service.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6889849" vertical-offset="136" max-vertical-offset="1062">
+          <caret line="43" column="36" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
+          <folding>
+            <marker date="1415853639308" expanded="true" signature="307:381" placeholder="INSERT INTO ..." />
+            <marker date="1415853639308" expanded="true" signature="382:411" placeholder="UPDATE lat =..." />
+            <marker date="1415853639308" expanded="true" signature="941:962" placeholder="SELECT * FRO..markers..." />
+            <marker date="1415853639308" expanded="true" signature="1213:1247" placeholder="DELETE FROM ..." />
+          </folding>
         </state>
       </provider>
     </entry>

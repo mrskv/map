@@ -127,10 +127,16 @@ var App = (function() {
                             currentModel = this;
                         this.url = 'service.php?action=delete';
                         this.save({}, {
-                            success: function () {
-                                markerObj.setMap(null);
-                                App.markerCollection.remove(currentModel.cid);
-                                delete(App.markers[id]);
+                            success: function (model, response) {
+                                if(response.status === 'success') {
+                                    markerObj.setMap(null);
+                                    App.markerCollection.remove(currentModel.cid);
+                                    delete(App.markers[id]);
+                                }
+                                else {
+                                    alert('Something went wrong');
+                                }
+
                             }
                         });
                         return true;

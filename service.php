@@ -39,6 +39,15 @@ switch($action) {
         $query = 'DELETE FROM markers WHERE id = :id';
         $cmd = $db->prepare($query);
         $cmd->bindParam(':id', $payload['id'], PDO::PARAM_STR);
-        echo $cmd->execute();
+        if($cmd->execute()) {
+            echo json_encode(array(
+                'status' => 'success',
+            ));
+        }
+        else {
+            echo json_encode(array(
+                'status' => 'error',
+            ));
+        }
         break;
 }
