@@ -1,0 +1,17 @@
+{
+  "name": "Test",
+  "version": "0.0.1",
+  "authors": [
+    "Kirill Speransky"
+  ],
+  "description": "Some Code",
+  "main": "index.html",
+  "license": "MIT",
+  "homepage": "http://skv-dev.com",
+  "private": true,
+  "dependencies": {
+    "backbone": "~1.1.2",
+    "marionette": "~2.2.2",
+    "requirejs": "~2.1.15"
+  }
+}

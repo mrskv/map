@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAnuqqoBo_WpQ3dx8YlE4bdFyd6_oeONII&sensor=true"></script>
+    <script data-main="main" src="bower_components/requirejs/require.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="map"></div>
+    <div id="inputContainer">
+
+    </div>
+    <div id="markersList"></div>
+    <script id="markersTemplate" type="text/html">
+            <div class="markerContainer"> <%= id %> <button class="deleteMarker">Delete</button></div>
+    </script>
+    <script id="inputTemplate" type="text/html">
+        <div>Address</div>
+        <textarea id="markerAddress"></textarea>
+        <br>
+        <button id="addMarker">Add marker</button>
+    </script>
+</body>
+</html>
