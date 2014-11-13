@@ -1,22 +1,22 @@
 var App = (function() {
-    return {
+    var Obj = {
         /**
          * Инициализация...
          */
         init: function() {
-            this.initMap();
-            this.createModels();
-            this.createCollection();
-            this.loadMarkers();
-            this.setMapListeners();
-            this.renderInput();
-            this.markers = {};
+            Obj.initMap();
+            Obj.createModels();
+            Obj.createCollection();
+            Obj.loadMarkers();
+            Obj.setMapListeners();
+            Obj.renderInput();
+            Obj.markers = {};
         },
         /**
          * Создание карты
          */
         initMap: function() {
-            this.map = new google.maps.Map(document.getElementById("map"), {
+            Obj.map = new google.maps.Map(document.getElementById("map"), {
               center: new google.maps.LatLng(48.46609081135489, 35.009653572924435),
               zoom: 13,
               mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -27,76 +27,72 @@ var App = (function() {
          */
         createCollection: function() {
             var Collection = Backbone.Collection.extend({
-                model: App.Model.Marker
+                model: Obj.Model.Marker
             });
-            this.markerCollection = new Collection();
-            this.markerCollection.bind("change reset add remove", function(child, collection, state) {
-                if(state !== undefined) {
-                    if(state.add !== undefined) {
-                        App.updateView(child);
-                    }
-                    if(state.index !== undefined) {
-                        child.view.destroy();
-                    }
-                }
+            Obj.markerCollection = new Collection();
+            Obj.markerCollection.bind("add", function(child) {
+                Obj.createView(child);
             }, this);
         },
         /**
          * Создание вьюшки модели и установка слушателей на кнопку удаления
          * @param model Моделька маркера
          */
-        updateView: function(model) {
+        createView: function(model) {
             var MyItemsView = Marionette.ItemView.extend({
                 template: "#markersTemplate",
-                ui: {
-                    button: '.deleteMarker'
-                },
                 events: {
-                    'click .deleteMarker': 'clickedButton',
+                    'click .deleteMarker': 'deleteMarker',
                     'mouseover .deleteMarker': 'startBounce',
                     'mouseout .deleteMarker': 'stopBounce'
                 },
-                clickedButton: function() {
-                    if(this.model.deleteMarker()) {
-                        this.destroy();
-                    }
-
+                deleteMarker: function() {
+                    this.model.deleteMarker();
                 },
                 startBounce: function() {
-                    this.model.startBounce();
+                    var markerObj = Obj.markers[this.model.get('id')];
+                    markerObj.setAnimation(google.maps.Animation.BOUNCE);
                 },
                 stopBounce: function() {
-                    this.model.stopBounce();
+                    var markerObj = Obj.markers[this.model.get('id')];
+                    markerObj.setAnimation(google.maps.Animation.j);
                 }
             });
 
             var view = new MyItemsView({
                 model: model
             });
+
             document.getElementById('markersList').appendChild(view.render().el);
-            model.view = view;
+            model.on('destroy', function() {
+                view.destroy();
+                console.log(Obj.markerCollection);
+            }, this);
         },
         /**
          * Создание модели загрузки списка маркеров и модели самого маркера
          */
         createModels: function() {
-            var t = this;
-            this.Model = {};
+            Obj.Model = {};
 
-            this.Model.LoadMarker = Backbone.Model.extend({
+            Obj.Model.LoadMarker = Backbone.Model.extend({
                 defaults: {
                 },
                 url:"service.php?action=list"
             });
 
-            this.Model.Marker = Backbone.Model.extend({
+            Obj.Model.InputModel = Backbone.Model.extend({
                 defaults: {
-                    lat: '',
-                    lng: '',
-                    id: ''
+                    address: ''
                 },
+                addMarker: function() {
+                    Obj.addMarkerByAddress(this.get('address'));
+                }
+            });
+
+            Obj.Model.Marker = Backbone.Model.extend({
                 setListeners: function() {
-                    var markerObj = t.markers[this.get('id')],
+                    var markerObj = Obj.markers[this.get('id')],
                         currentModel = this;
                     google.maps.event.addListener(markerObj,'dragend',function(event) {
                         currentModel.set({
@@ -123,15 +119,14 @@ var App = (function() {
                 deleteMarker: function() {
                     if(confirm('Delete this marker?')) {
                         var id = this.get('id'),
-                            markerObj = App.markers[id],
                             currentModel = this;
                         this.url = 'service.php?action=delete';
                         this.save({}, {
                             success: function (model, response) {
                                 if(response.status === 'success') {
-                                    markerObj.setMap(null);
-                                    App.markerCollection.remove(currentModel.cid);
-                                    delete(App.markers[id]);
+                                    currentModel.destroy();
+                                    Obj.markers[id].setMap(null);
+                                    delete(Obj.markers[id]);
                                 }
                                 else {
                                     alert('Something went wrong');
@@ -142,14 +137,6 @@ var App = (function() {
                         return true;
                     }
                     return false;
-                },
-                startBounce: function() {
-                    var markerObj = App.markers[this.get('id')];
-                    markerObj.setAnimation(google.maps.Animation.BOUNCE);
-                },
-                stopBounce: function() {
-                    var markerObj = App.markers[this.get('id')];
-                    markerObj.setAnimation(google.maps.Animation.j);
                 }
             });
         },
@@ -157,13 +144,12 @@ var App = (function() {
          * Загрузка списка маркеров
          */
         loadMarkers: function() {
-            var t = this,
-                model = new this.Model.LoadMarker();
+            var model = new Obj.Model.LoadMarker();
             model.fetch({
                 success: function(model, response) {
                     _.each(response, function(i) {
                         var location = new google.maps.LatLng(i.lat, i.lng);
-                        t.createMarker(location, i.id, false);
+                        Obj.createMarker(location, i.id, false);
                     });
                 }
             });
@@ -173,9 +159,8 @@ var App = (function() {
          * Устанавливаем слушателей самой карты
          */
         setMapListeners: function() {
-            var t = this;
-            google.maps.event.addListener(this.map, 'click', function(event) {
-                t.createMarker(event.latLng);
+            google.maps.event.addListener(Obj.map, 'click', function(event) {
+                Obj.createMarker(event.latLng);
             });
         },
         /**
@@ -185,18 +170,17 @@ var App = (function() {
          * @param {Bool|undefined} save Нужно ли отправлять запрос на сервер для сохранения маркера
          */
         createMarker: function(location, id, save) {
-            var t = this;
             if(id === undefined) {
                 id = + new Date;
             }
             var marker = new google.maps.Marker({
                 position: location,
-                map: this.map,
+                map: Obj.map,
                 draggable: true,
                 id: id
             });
-            this.markers[id] = marker;
-            t.createMarkerModel({
+            Obj.markers[id] = marker;
+            Obj.createMarkerModel({
                 lat: location.lat(),
                 lng: location.lng(),
                 id: id,
@@ -208,7 +192,7 @@ var App = (function() {
          * @param data
          */
         createMarkerModel: function(data) {
-            var markerModel = new this.Model.Marker({
+            var markerModel = new Obj.Model.Marker({
                 lat: data.lat,
                 lng: data.lng,
                 id: data.id
@@ -217,27 +201,34 @@ var App = (function() {
             if(data.save !== false) {
                 markerModel.saveMarker();
             }
-            this.markerCollection.add(markerModel);
+            Obj.markerCollection.add(markerModel);
         },
         /**
          * рендер блока адреса
          */
         renderInput: function() {
-            var InputView = Backbone.View.extend({
-                el: '#inputContainer',
-                events: {
-                    'click #addMarker': 'addMarker'
-                },
-                render: function () {
-                    this.$el.html(_.template(document.getElementById('inputTemplate').innerHTML));
-                    return this;
-                },
-                addMarker: function() {
-                    App.addMarkerByAddress(this.$el.find('#markerAddress').val());
-                }
+            var inputModel = new Obj.Model.InputModel(),
+                InputView = Marionette.ItemView.extend({
+                    template: "#inputTemplate",
+                    events: {
+                        'click #addMarker': 'addMarker',
+                        'input #markerAddress': 'changeAddress'
+                    },
+                    changeAddress: function(e) {
+                        this.model.set('address', $(e.currentTarget).val());
+                    },
+                    render: function () {
+                        this.$el.html(_.template(document.getElementById('inputTemplate').innerHTML));
+                        return this;
+                    },
+                    addMarker: function() {
+                        this.model.addMarker();
+                    }
+                });
+            var c = new InputView({
+                model: inputModel
             });
-            var c = new InputView();
-            c.render();
+            document.getElementById('inputContainer').appendChild(c.render().el);
         },
         /**
          * Получение координат по указанному адресу через geocode и создание маркера, если все ок :)
@@ -247,9 +238,12 @@ var App = (function() {
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode({ 'address': address}, function(results, status) {
                 if(status === 'OK') {
-                    App.createMarker(results[0].geometry.location);
+                    Obj.createMarker(results[0].geometry.location);
                 }
             });
         }
+    };
+    return {
+        init: Obj.init
     }
 }()); 
