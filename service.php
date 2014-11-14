@@ -35,10 +35,10 @@ switch($action) {
         echo json_encode($cmd->fetchAll(PDO::FETCH_ASSOC));
         break;
     case 'delete':
-        $payload = (array) json_decode(file_get_contents('php://input'));
+        $id = $_GET['id'];
         $query = 'DELETE FROM markers WHERE id = :id';
         $cmd = $db->prepare($query);
-        $cmd->bindParam(':id', $payload['id'], PDO::PARAM_STR);
+        $cmd->bindParam(':id', $id, PDO::PARAM_STR);
         if($cmd->execute()) {
             echo json_encode(array(
                 'status' => 'success',

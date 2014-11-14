@@ -68,7 +68,7 @@ var App = (function() {
             });
 
             document.getElementById('markersList').appendChild(view.render().el);
-            model.on('destroy', function() {
+            model.on('destroySuccess', function() {
                 view.destroy();
             }, this);
 
@@ -122,21 +122,19 @@ var App = (function() {
                     if(confirm('Delete this marker?')) {
                         var id = this.get('id'),
                             currentModel = this;
-                        this.url = 'service.php?action=delete';
-                        this.save({}, {
-                            success: function (model, response) {
+                        this.url = 'service.php?action=delete&id='+id;
+                        currentModel.destroy({
+                            success: function(model, response) {
                                 if(response.status === 'success') {
-                                    currentModel.destroy();
+                                    currentModel.trigger('destroySuccess');
                                     Obj.markers[id].setMap(null);
                                     delete(Obj.markers[id]);
                                 }
                                 else {
                                     alert('Something went wrong');
                                 }
-
                             }
                         });
-                        return true;
                     }
                     return false;
                 }
