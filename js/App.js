@@ -77,8 +77,18 @@ var App = (function() {
                 draggable: true,
                 id: model.get('id')
             });
+            marker.addListener('dragend',function(event) {
+                model.set({
+                    lat: event.latLng.lat(),
+                    lng: event.latLng.lng()
+                });
+                model.saveMarker();
+            });
+            marker.addListener('dblclick',function() {
+                model.deleteMarker();
+            });
+
             Obj.markers[model.get('id')] = marker;
-            model.setMarkerListeners();
         },
         /**
          * Создание модели загрузки списка маркеров и модели самого маркера
@@ -96,20 +106,6 @@ var App = (function() {
             });
 
             Obj.Model.Marker = Backbone.Model.extend({
-                setMarkerListeners: function() {
-                    var markerObj = Obj.markers[this.get('id')],
-                        currentModel = this;
-                    google.maps.event.addListener(markerObj,'dragend',function(event) {
-                        currentModel.set({
-                            lat: event.latLng.lat(),
-                            lng: event.latLng.lng()
-                        });
-                        currentModel.saveMarker();
-                    });
-                    google.maps.event.addListener(markerObj,'dblclick',function() {
-                        currentModel.deleteMarker();
-                    });
-                },
                 saveMarker: function() {
                     this.url = 'service.php?action=create';
                     this.save({}, {
