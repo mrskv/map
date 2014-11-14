@@ -4,12 +4,12 @@ var App = (function() {
          * Инициализация...
          */
         init: function() {
+            Obj.markers = {};
             Obj.initMap();
             Obj.createModels();
             Obj.createCollection();
             Obj.setMapListeners();
             Obj.renderInput();
-            Obj.markers = {};
         },
         /**
          * Создание карты
@@ -40,7 +40,8 @@ var App = (function() {
          * @param model Моделька маркера
          */
         createView: function(model) {
-            var MyItemsView, view, marker;
+            var id = model.get('id'),
+                MyItemsView, view, marker;
 
             MyItemsView = Marionette.ItemView.extend({
                 template: "#markersTemplate",
@@ -53,11 +54,11 @@ var App = (function() {
                     this.model.deleteMarker();
                 },
                 startBounce: function() {
-                    var markerObj = Obj.markers[this.model.get('id')];
+                    var markerObj = Obj.markers[id];
                     markerObj.setAnimation(google.maps.Animation.BOUNCE);
                 },
                 stopBounce: function() {
-                    var markerObj = Obj.markers[this.model.get('id')];
+                    var markerObj = Obj.markers[id];
                     markerObj.setAnimation(google.maps.Animation.j);
                 }
             });
@@ -75,7 +76,7 @@ var App = (function() {
                 position: new google.maps.LatLng(model.get('lat'), model.get('lng')),
                 map: Obj.map,
                 draggable: true,
-                id: model.get('id')
+                id: id
             });
             marker.addListener('dragend',function(event) {
                 model.set({
@@ -88,7 +89,7 @@ var App = (function() {
                 model.deleteMarker();
             });
 
-            Obj.markers[model.get('id')] = marker;
+            Obj.markers[id] = marker;
         },
         /**
          * Создание модели загрузки списка маркеров и модели самого маркера
@@ -183,10 +184,10 @@ var App = (function() {
                     addMarker: function() {
                         this.model.addMarker();
                     }
+                }),
+                c = new InputView({
+                    model: inputModel
                 });
-            var c = new InputView({
-                model: inputModel
-            });
             document.getElementById('inputContainer').appendChild(c.render().el);
         },
         /**
