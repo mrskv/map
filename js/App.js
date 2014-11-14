@@ -83,7 +83,7 @@ var App = (function() {
                     lat: event.latLng.lat(),
                     lng: event.latLng.lng()
                 });
-                model.saveMarker();
+                model.saveMarker(true);
             });
             marker.addListener('dblclick',function() {
                 model.deleteMarker();
@@ -107,14 +107,15 @@ var App = (function() {
             });
 
             Obj.Model.Marker = Backbone.Model.extend({
-                saveMarker: function() {
-                    this.url = 'service.php?action=create';
-                    this.save({}, {
+                saveMarker: function(patch) {
+                    this.url = (patch) ? 'service.php?action=update' : 'service.php?action=create';
+                    this.save(this.toJSON(), {
                         success: function(model, response) {
                             if(response.status === 'error') {
                                 alert('Something went wrong');
                             }
-                        }
+                        },
+                        patch: patch
                     });
 
                 },
@@ -159,7 +160,7 @@ var App = (function() {
                 id: + new Date
             });
             Obj.markerCollection.add(markerModel);
-            markerModel.saveMarker();
+            markerModel.saveMarker(false);
         },
         /**
          * рендер блока адреса
